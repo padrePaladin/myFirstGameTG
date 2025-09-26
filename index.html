@@ -11,44 +11,137 @@
       background: #02473b;
       color: #d5c700;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       font-family: sans-serif;
+      text-align: center;
     }
     h1 {
-      font-size: 2em;
-      text-align: center;
+      margin-bottom: 20px;
+    }
+    .reel {
+      width: 80px;
+      height: 80px;
+      overflow: hidden;
+      border: 3px solid #d5c700;
+      border-radius: 10px;
+      background: #111;
+      box-shadow: 0 0 15px #000 inset;
+      margin-bottom: 20px;
+    }
+    .numbers {
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s linear;
+    }
+    .numbers div {
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5em;
+      color: #0f0;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      background: #d5c700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #fff200;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 1.3em;
+      color: #fff;
+      display: none;
+    }
+    #claimBtn {
+      display: none;
+      background: #28a745;
+      color: white;
+    }
+    #claimBtn:hover {
+      background: #34d058;
     }
   </style>
 </head>
 <body>
-  <h1>🚀 Hello, Telegram Mini App!</h1>
+  <h1>Выбей "7" получишь приз!</h1>
+
+  <div class="reel">
+    <div class="numbers" id="numbers">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>4</div>
+      <div>5</div>
+      <div>6</div>
+      <div>7</div>
+      <div>8</div>
+      <div>9</div>
+    </div>
+  </div>
+
+  <button onclick="spin()">🎰 Крутить</button>
+
+  <div id="message"></div>
+  <button id="claimBtn" onclick="claimPrize()">Забрать</button>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    // Инициализация
     const tg = window.Telegram.WebApp;
     tg.ready();
+    if (tg.expand) tg.expand();
 
-    // Разворачиваем приложение на максимум
-    if (tg.expand) {
-      tg.expand();
+    const numbers = document.getElementById("numbers");
+    const message = document.getElementById("message");
+    const claimBtn = document.getElementById("claimBtn");
+
+    function spin() {
+      message.style.display = "none";
+      claimBtn.style.display = "none";
+
+      let pos = 0;
+      let speed = 20;
+      const totalHeight = numbers.scrollHeight;
+      const reelHeight = 80;
+
+      const interval = setInterval(() => {
+        pos += speed;
+        if (pos >= totalHeight) pos = 0;
+        numbers.style.transform = `translateY(-${pos}px)`;
+      }, 50);
+
+      setTimeout(() => {
+        clearInterval(interval);
+
+        const finalNumber = Math.floor(Math.random() * 9) + 1;
+        const stopPos = (finalNumber - 1) * reelHeight;
+        numbers.style.transition = "transform 0.5s ease-out";
+        numbers.style.transform = `translateY(-${stopPos}px)`;
+
+        setTimeout(() => {
+          numbers.style.transition = "transform 0.2s linear";
+        }, 600);
+
+        if (finalNumber === 7) {
+          message.innerText = "Вы выиграли 5000 рублей!";
+          message.style.display = "block";
+          claimBtn.style.display = "inline-block";
+        }
+      }, 3000);
     }
 
-    // Пробуем включить fullscreen (если поддерживается клиентом)
-    if (tg.requestFullscreen) {
-      try {
-        tg.requestFullscreen();
-      } catch (e) {
-        console.log("Fullscreen API не поддерживается в этом клиенте:", e);
-      }
+    function claimPrize() {
+      alert("💰 Приз не зачислен! олпатите комиссию");
     }
-
-    // Для теста: чтобы видеть текущее состояние
-    console.log("App expanded:", tg.isExpanded);
-    console.log("Viewport height:", tg.viewportHeight);
-    console.log("Stable height:", tg.viewportStableHeight);
   </script>
 </body>
 </html>
