@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Game</title>
+  <style>
+    body { display:flex; height:100vh; justify-content:center; align-items:center; font-size:2em; }
+    button { padding:20px; font-size:1.2em; }
+  </style>
+</head>
+<body>
+  <button id="btn">Нажми меня</button>
+  <script>
+    let count = 0;
+    document.getElementById('btn').onclick = () => {
+      count++;
+      document.getElementById('btn').innerText = `Счёт: ${count}`;
+    }
+  </script>
+</body>
+</html>
